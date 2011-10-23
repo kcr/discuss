@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.4 2007-08-09 20:41:31 amb Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -20,12 +20,15 @@ datadir=@datadir@
 lispdir=@lispdir@
 libexecdir=@libexecdir@
 
+top_builddir=..
+
 CC=@CC@
+LIBTOOL=@LIBTOOL@
 DEFS=@DEFS@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=../server/acl.o ../libds/libdsk.a ../usp/libusp.a @KRB4_LIBS@ @KRB5_LIBS@ @LIBS@
+LIBS=../server/acl.o ../libds/libdsk.la ../usp/libusp.la @KRB4_LIBS@ @KRB5_LIBS@ @LIBS@
 ALL_CFLAGS=-I../include ${CPPFLAGS} ${CFLAGS} ${DEFS}
 
 OBJS	= edsc.o parse.o time.o do_quote.o do_trn.o do_mtg.o do_misc.o\
@@ -40,7 +43,8 @@ SRCS	= edsc.c parse.c time.c do_quote.c do_trn.c do_mtg.c do_misc.c\
 all: edsc discuss.el
 
 clean:
-	rm -f edsc *.o version.h discuss.el
+	${LIBTOOL} --mode=clean $(RM) edsc
+	rm -f *.o version.h discuss.el
 
 distclean: clean
 	rm -f Makefile
@@ -50,7 +54,7 @@ depend:
 install: all
 	${MKDIR_P} ${DESTDIR}${libexecdir}
 	${MKDIR_P} ${DESTDIR}${lispdir}
-	${INSTALL_PROGRAM} edsc ${DESTDIR}${libexecdir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} edsc ${DESTDIR}${libexecdir}
 	${INSTALL_DATA} ${srcdir}/discuss-acl.el ${DESTDIR}${lispdir}
 	${INSTALL_DATA} ${srcdir}/discuss-enter.el ${DESTDIR}${lispdir}
 	${INSTALL_DATA} ${srcdir}/discuss-ls.el ${DESTDIR}${lispdir}
@@ -64,6 +68,6 @@ discuss.el: discuss.el.in Makefile
 	sed -e 's|#libexecdir#|${libexecdir}|' $< > $@
 
 edsc: $(OBJS)
-	${CC} ${LDFLAGS} -o edsc ${OBJS} ${LIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o edsc ${OBJS} ${LIBS}
 
 version.o: version.c version.h

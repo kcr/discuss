@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.1 1999-02-02 20:40:47 kcr Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -13,23 +13,28 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 
+top_builddir=..
+
 CC=@CC@
+LIBTOOL=@LIBTOOL@
 DEFS=@DEFS@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
 ALL_CFLAGS=-I../include ${CPPFLAGS} ${CFLAGS} ${DEFS}
 RANLIB=@RANLIB@
 
-OBJS=	main.o block.o get.o put.o internal.o
-USPET=	../ets/usp_et.o
+OBJS=	main.lo block.lo get.lo put.lo internal.lo
+USPET=	../ets/usp_et.lo
 
-.c.o:
-	${CC} -c ${ALL_CFLAGS} $<
+.SUFFIXES: .c .lo
 
-all: libusp.a
+.c.lo:
+	${LIBTOOL} --mode=compile ${CC} -c ${ALL_CFLAGS} $<
+
+all: libusp.la
 
 clean:
-	rm -f libusp.a $(OBJS)
+	${LIBTOOL} --mode=clean $(RM) libusp.la $(OBJS)
 
 distclean: clean
 	rm -f Makefile
@@ -38,8 +43,7 @@ depend:
 
 install:
 	${MKDIR_P} ${DESTDIR}${libdir}
-	${INSTALL_PROGRAM} libusp.a ${DESTDIR}${libdir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} libusp.la ${DESTDIR}${libdir}
 
-libusp.a: $(OBJS) $(USPET)
-	ar cru $@ $(OBJS) $(USPET)
-	$(RANLIB) $@
+libusp.la: $(OBJS) $(USPET)
+	${LIBTOOL} --mode=link $(CC) -o $@ -version-info 0:0:0 -rpath ${libdir} $(OBJS) $(USPET)

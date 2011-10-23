@@ -1,9 +1,10 @@
 AC_INIT
 AC_CONFIG_SRCDIR([client/discuss.c])
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_MKDIR_P
 
 lispdir='${datarootdir}/emacs/site-lisp'

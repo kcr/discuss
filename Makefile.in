@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.1 1999-02-02 20:39:39 kcr Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_DATA=@INSTALL_DATA@

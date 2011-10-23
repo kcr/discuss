@@ -17,6 +17,7 @@
 #define const
 #endif
 
+#ifdef HAVE_KRB4
 extern const char * const krb_err_txt[256];
 extern int init_error_table();
 
@@ -25,3 +26,4 @@ const int krb_err_base = 39525376;
 int init_krb_err_tbl (NOARGS) {
     return(init_error_table(krb_err_txt, 39525376, 200));
 }
+#endif

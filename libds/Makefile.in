@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.2 2007-08-09 20:41:32 amb Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -13,43 +13,47 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 
+top_builddir=..
+
 CC=@CC@
+LIBTOOL=@LIBTOOL@
 DEFS=@DEFS@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
 ALL_CFLAGS=-I../include ${CPPFLAGS} ${CFLAGS} ${DEFS}
 RANLIB=@RANLIB@
 
-USPET=	../ets/usp_et.o
-RPCET=	../ets/rpc_et.o
-DSCET=	../ets/dsc_et.o
+USPET=	../ets/usp_et.lo
+RPCET=	../ets/rpc_et.lo
+DSCET=	../ets/dsc_et.lo
 
 ETS=	$(RPCET) $(USPET) $(DSCET)
-KRBET=	../ets/krb_et.o
+KRBET=	../ets/krb_et.lo
 
-OBJS=	tfile.o tunix.o tnet.o stubs.o dsname.o interface.o \
-	conv_mgr.o host.o announce.o dsc_enter.o tmem.o \
-	res_module.o rpcall.o auth_krb.o
+OBJS=	tfile.lo tunix.lo tnet.lo stubs.lo dsname.lo interface.lo \
+	conv_mgr.lo host.lo announce.lo dsc_enter.lo tmem.lo \
+	res_module.lo rpcall.lo auth_krb.lo
 
-LIBS=	libdsk.a
+LIBS=	libdsk.la
 
-.c.o:
-	${CC} -c ${ALL_CFLAGS} $<
+.SUFFIXES: .c .lo
+
+.c.lo:
+	${LIBTOOL} --mode=compile ${CC} -c ${ALL_CFLAGS} $<
 
 all:	$(LIBS)
 
 clean:
-	rm -f $(LIBS) $(OBJS)
+	${LIBTOOL} --mode=clean rm -f $(LIBS) $(OBJS)
 
 distclean: clean
 	rm -f Makefile
 
 depend:
 
-install:
+install: libdsk.la
 	${MKDIR_P} ${DESTDIR}${libdir}
-	${INSTALL_PROGRAM} libdsk.a ${DESTDIR}${libdir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} libdsk.la ${DESTDIR}${libdir}
 
-libdsk.a: $(OBJS) $(KOBJS) $(ETS) $(KRBET)
-	ar cru libdsk.a $(OBJS) $(KOBJS) $(ETS) $(KRBET)
-	${RANLIB} libdsk.a
+libdsk.la: $(OBJS) $(KOBJS) $(ETS) $(KRBET)
+	${LIBTOOL} --mode=link ${CC} -version-info 0:0:0 -rpath ${libdir} ${LDFLAGS} -o $@ $(OBJS) $(KOBJS) $(ETS) $(KRBET)

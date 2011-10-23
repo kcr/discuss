@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.2 2007-08-09 20:41:32 amb Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -16,7 +16,10 @@ bindir=@bindir@
 datarootdir=@datarootdir@
 mandir=@mandir@
 
+top_builddir=..
+
 CC=@CC@
+LIBTOOL=@LIBTOOL@
 DEFS=@DEFS@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
@@ -24,7 +27,7 @@ LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 ALL_CFLAGS=-I../include ${CPPFLAGS} ${CFLAGS} ${DEFS}
 
-KLIBS=	../libds/libdsk.a ../usp/libusp.a @KRB4_LIBS@ @KRB5_LIBS@ ${LIBS}
+KLIBS=	../libds/libdsk.la ../usp/libusp.la @KRB4_LIBS@ @KRB5_LIBS@ ${LIBS}
 
 .c.o:
 	${CC} -c ${ALL_CFLAGS} $<
@@ -32,7 +35,8 @@ KLIBS=	../libds/libdsk.a ../usp/libusp.a @KRB4_LIBS@ @KRB5_LIBS@ ${LIBS}
 all: create_mtg_dir crmtgs mkds pmtg dsmail dspipe
 
 clean:
-	rm -f create_mtg_dir crmtgs mkds pmtg dsmail dspipe *.o
+	rm -f *.o
+	$(LIBTOOL) --mode=clean $(RM) create_mtg_dir crmtgs mkds pmtg dsmail dspipe
 
 distclean: clean
 	rm -f Makefile
@@ -43,12 +47,12 @@ install:
 	${MKDIR_P} ${DESTDIR}${bindir}
 	${MKDIR_P} ${DESTDIR}${mandir}/man1
 	${MKDIR_P} ${DESTDIR}${mandir}/man8
-	${INSTALL_PROGRAM} create_mtg_dir ${DESTDIR}${bindir}
-	${INSTALL_PROGRAM} crmtgs ${DESTDIR}${bindir}
-	${INSTALL_PROGRAM} mkds ${DESTDIR}${bindir}
-	${INSTALL_PROGRAM} pmtg ${DESTDIR}${bindir}
-	${INSTALL_PROGRAM} dsmail ${DESTDIR}${bindir}
-	${INSTALL_PROGRAM} dspipe ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} create_mtg_dir ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} crmtgs ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} mkds ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} pmtg ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} dsmail ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} dspipe ${DESTDIR}${bindir}
 	-rm -f $(DESTDIR)${bindir}/rmds
 	-ln -s mkds $(DESTDIR)$(bindir)/rmds
 	${INSTALL} -m 755 dsc_setup.sh ${DESTDIR}${bindir}/dsc_setup
@@ -61,19 +65,19 @@ install:
 	${INSTALL_DATA} rmds.8 ${DESTDIR}${mandir}/man8
 
 create_mtg_dir: create_mtg_dir.o
-	${CC} ${LDFLAGS} -o create_mtg_dir create_mtg_dir.o
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o create_mtg_dir create_mtg_dir.o
 
 crmtgs: crmtgs.o ../ets/dsc_et.o
-	${CC} ${LDFLAGS} -o crmtgs crmtgs.o ../ets/dsc_et.o ${KLIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o crmtgs crmtgs.o ../ets/dsc_et.o ${KLIBS}
 
 mkds: mkds.o ../ets/dsc_et.o ../client/edit.o
-	${CC} ${LDFLAGS} -o mkds mkds.o ../ets/dsc_et.o ../client/edit.o ${KLIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o mkds mkds.o ../ets/dsc_et.o ../client/edit.o ${KLIBS}
 
 pmtg: pmtg.o ../ets/dsc_et.o
-	${CC} ${LDFLAGS} -o pmtg pmtg.o ../ets/dsc_et.o ${KLIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o pmtg pmtg.o ../ets/dsc_et.o ${KLIBS}
 
 dsmail: dsmail.o ../ets/dsc_et.o
-	${CC} ${LDFLAGS} -o dsmail dsmail.o ../ets/dsc_et.o ${KLIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o dsmail dsmail.o ../ets/dsc_et.o ${KLIBS}
 
 dspipe: dspipe.o ../ets/dsc_et.o
-	${CC} ${LDFLAGS} -o dspipe dspipe.o ../ets/dsc_et.o ${KLIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o dspipe dspipe.o ../ets/dsc_et.o ${KLIBS}

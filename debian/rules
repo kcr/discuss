@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 
 DEB_AUTO_UPDATE_AUTOCONF = 2.50
+DEB_AUTO_UPDATE_ACLOCAL = 1.9
+DEB_AUTO_UPDATE_LIBTOOL = pre
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
@@ -16,4 +18,5 @@ DEB_CONFIGURE_EXTRA_FLAGS += --without-krb4 --with-krb5 --with-zephyr --with-pag
 DEB_DH_INSTALL_SOURCEDIR = $(DEB_DESTDIR)
 
 clean::
-	rm -f configure config.guess config.sub aclocal.m4 install-sh missing
+	rm -rf configure config.guess config.sub aclocal.m4 install-sh missing libtool ltmain.sh m4
+

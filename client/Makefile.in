@@ -2,7 +2,7 @@
 # $Id: Makefile.in,v 1.3 2007-08-09 20:41:30 amb Exp $
 #
 
-SHELL=/bin/sh
+SHELL=@SHELL@
 VPATH=@srcdir@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -17,12 +17,15 @@ datarootdir=@datarootdir@
 datadir=@datadir@
 ssinfodir=${datadir}/discuss/info
 
+top_builddir=..
+
 CC=@CC@
+LIBTOOL=@LIBTOOL@
 DEFS=@DEFS@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=../server/acl.o ../libds/libdsk.a ../usp/libusp.a @KRB4_LIBS@ @KRB5_LIBS@ -lss @LIBS@
+LIBS=../server/acl.o ../libds/libdsk.la ../usp/libusp.la @KRB4_LIBS@ @KRB5_LIBS@ -lss @LIBS@
 ALL_CFLAGS=-I../include ${CPPFLAGS} ${CFLAGS} ${DEFS}
 
 OBJS=	discuss.o edit.o output.o trn_expr.o list.o trn_select.o \
@@ -86,7 +89,8 @@ all: discuss
 
 clean:
 	rm -f *.o *~ \#* *.bak
-	rm -f discuss cmds.c trn_expr.c y.tab.c TAGS info.tar
+	rm -f cmds.c trn_expr.c y.tab.c TAGS info.tar
+	${LIBTOOL} --mode=clean $(RM) discuss
 
 distclean: clean
 	rm -f Makefile
@@ -122,7 +126,7 @@ install:
 	${INSTALL_DATA} ${srcdir}/info/talk.info ${DESTDIR}${ssinfodir}
 	${INSTALL_DATA} ${srcdir}/info/transaction_specifiers.info ${DESTDIR}${ssinfodir}
 	${INSTALL_DATA} ${srcdir}/info/write.info ${DESTDIR}${ssinfodir}
-	${INSTALL_PROGRAM} discuss ${DESTDIR}${bindir}
+	${LIBTOOL} --mode=install ${INSTALL_PROGRAM} discuss ${DESTDIR}${bindir}
 	@set $(INFOLINKS); \
 	while [ $$# -ge 2 ]; do \
 		rm -f ${DESTDIR}${ssinfodir}/$$1; \
@@ -132,5 +136,5 @@ install:
 	done
 
 discuss: $(OBJS)
-	${CC} ${LDFLAGS} -o discuss ${OBJS} ${LIBS}
+	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o discuss ${OBJS} ${LIBS}
 
